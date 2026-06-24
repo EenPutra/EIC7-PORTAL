@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="eic7-callout-data.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0; background:#F4F7FB;}
+  ::-webkit-scrollbar{height:8px; width:8px;}
+  ::-webkit-scrollbar-thumb{background:#c3d0e0; border-radius:8px;}
+</style>
+</helmet>
+
+<div style="font-family:'IBM Plex Sans',sans-serif; color:#0F1E2E; min-height:100vh; background:#F4F7FB;">
+
+  <!-- TOP BAR -->
+  <header style="display:flex; align-items:center; justify-content:space-between; padding:18px 40px; background:#0A2540;">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div style="width:42px; height:42px; border-radius:8px; background:rgba(255,255,255,.08); border:1px dashed rgba(255,255,255,.28); display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:9px; color:rgba(255,255,255,.6);">LOGO</div>
+      <div style="line-height:1.15;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:17px; color:#fff;">EIC<span style="color:#FFB74D;">7</span> CALL OUT</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:rgba(255,255,255,.55); letter-spacing:0.08em;">PLTU UNIT 7 · STANDBY SCHEDULE 2026</div>
+      </div>
+    </div>
+    <a href="index.html" style="display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.8); text-decoration:none; font-size:13px; font-weight:500;">← Kembali ke Portal</a>
+  </header>
+
+  <div style="max-width:1120px; margin:0 auto; padding:36px 28px 64px;">
+
+    <!-- TITLE + LEGEND -->
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:18px; margin-bottom:24px;">
+      <div>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; color:#1769E0; letter-spacing:0.1em;">CALL OUT SCHEDULE</span>
+        <h1 style="font-family:'Space Grotesk',sans-serif; font-size:32px; letter-spacing:-0.02em; margin:8px 0 6px; color:#0A2540;">Kalender Standby EIC7</h1>
+        <p style="font-size:14px; color:#5B6B7B; margin:0;">Pilih tampilan tahun, bulan, atau minggu untuk melihat petugas standby — Leader, Electric, dan Instrument &amp; Control Unit 7.</p>
+      </div>
+      <div style="display:flex; gap:18px; align-items:center;">
+        <div style="display:flex; align-items:center; gap:7px;"><span style="width:11px; height:11px; border-radius:3px; background:#0A2540;"></span><span style="font-size:12px; color:#5B6B7B;">Leader</span></div>
+        <div style="display:flex; align-items:center; gap:7px;"><span style="width:11px; height:11px; border-radius:3px; background:#1769E0;"></span><span style="font-size:12px; color:#5B6B7B;">Electric</span></div>
+        <div style="display:flex; align-items:center; gap:7px;"><span style="width:11px; height:11px; border-radius:3px; background:#F7941D;"></span><span style="font-size:12px; color:#5B6B7B;">Instrument &amp; Control</span></div>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; background:#fff; border:1px solid #E2E9F1; border-radius:14px; padding:14px 18px; margin-bottom:24px;">
+      <div style="display:flex; background:#F4F7FB; border-radius:10px; padding:4px; gap:2px;">
+        <button onClick="{{ viewYear }}" style="border:none; cursor:pointer; font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:13px; padding:9px 18px; border-radius:8px; background:{{ yearBg }}; color:{{ yearFg }};">Tahun</button>
+        <button onClick="{{ viewMonth }}" style="border:none; cursor:pointer; font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:13px; padding:9px 18px; border-radius:8px; background:{{ monthBg }}; color:{{ monthFg }};">Bulan</button>
+        <button onClick="{{ viewWeek }}" style="border:none; cursor:pointer; font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:13px; padding:9px 18px; border-radius:8px; background:{{ weekBg }}; color:{{ weekFg }};">Minggu</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button onClick="{{ goPrev }}" style="width:36px; height:36px; border-radius:9px; border:1px solid #E2E9F1; background:#fff; cursor:pointer; color:#0A2540; font-size:16px;">‹</button>
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; color:#0A2540; min-width:160px; text-align:center;">{{ navLabel }}</div>
+        <button onClick="{{ goNext }}" style="width:36px; height:36px; border-radius:9px; border:1px solid #E2E9F1; background:#fff; cursor:pointer; color:#0A2540; font-size:16px;">›</button>
+        <button onClick="{{ goToday }}" style="margin-left:6px; border:1px solid #1769E0; background:#E8F0FD; color:#1769E0; cursor:pointer; font-weight:600; font-size:12px; padding:9px 14px; border-radius:9px;">Minggu Ini</button>
+      </div>
+    </div>
+
+    <!-- YEAR VIEW -->
+    <sc-if value="{{ isYear }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px;">
+        <sc-for list="{{ monthsList }}" as="mo" hint-placeholder-count="12">
+          <div onClick="{{ mo.open }}" style="cursor:pointer; background:#fff; border:{{ mo.ring }}; border-radius:14px; padding:18px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+              <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:17px; color:#0A2540;">{{ mo.name }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#fff; background:{{ mo.badgeBg }}; padding:3px 8px; border-radius:20px;">{{ mo.tag }}</span>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <div style="flex:1; text-align:center; background:#F4F7FB; border-radius:9px; padding:10px 0;"><div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; color:#1769E0;">{{ mo.count }}</div><div style="font-size:10px; color:#5B6B7B;">periode</div></div>
+              <div style="flex:1; text-align:center; background:#FEF6EA; border-radius:9px; padding:10px 0;"><div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; color:#B45309;">{{ mo.weekend }}</div><div style="font-size:10px; color:#5B6B7B;">akhir pekan</div></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- MONTH VIEW -->
+    <sc-if value="{{ isMonth }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px;">
+        <sc-for list="{{ monthWeeks }}" as="wk" hint-placeholder-count="8">
+          <div onClick="{{ wk.open }}" style="cursor:pointer; background:#fff; border:{{ wk.ring }}; border-radius:14px; overflow:hidden; box-shadow:{{ wk.shadow }};">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #EEF2F7;">
+              <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; color:#0A2540;">{{ wk.range }}</div>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; color:{{ wk.typeColor }}; background:{{ wk.typeBg }}; padding:4px 10px; border-radius:20px;">{{ wk.typeLabel }}</span>
+            </div>
+            <div style="padding:14px 18px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; gap:10px;"><span style="width:9px; height:9px; border-radius:3px; background:#0A2540; flex-shrink:0;"></span><span style="font-size:11px; color:#94A3B8; font-family:'IBM Plex Mono',monospace; width:78px; flex-shrink:0;">LEADER</span><span style="font-size:13px; font-weight:600; color:#0F1E2E;">{{ wk.lead }}</span></div>
+              <div style="display:flex; align-items:center; gap:10px;"><span style="width:9px; height:9px; border-radius:3px; background:#1769E0; flex-shrink:0;"></span><span style="font-size:11px; color:#94A3B8; font-family:'IBM Plex Mono',monospace; width:78px; flex-shrink:0;">ELECTRIC</span><span style="font-size:13px; font-weight:600; color:#0F1E2E;">{{ wk.el }}</span></div>
+              <div style="display:flex; align-items:center; gap:10px;"><span style="width:9px; height:9px; border-radius:3px; background:#F7941D; flex-shrink:0;"></span><span style="font-size:11px; color:#94A3B8; font-family:'IBM Plex Mono',monospace; width:78px; flex-shrink:0;">INST &amp; CTRL</span><span style="font-size:13px; font-weight:600; color:#0F1E2E;">{{ wk.ins }}</span></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- WEEK VIEW -->
+    <sc-if value="{{ isWeek }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#fff; border:1px solid #E2E9F1; border-radius:18px; overflow:hidden; margin-bottom:20px;">
+        <div style="background:#0A2540; padding:24px 28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#FFB74D; letter-spacing:0.1em; margin-bottom:6px;">{{ wkMonthName }} · {{ wkTypeLabel }}</div>
+            <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:28px; color:#fff;">{{ wkRange }}</div>
+          </div>
+          <span style="font-size:12px; font-weight:600; color:{{ wkNowColor }}; background:{{ wkNowBg }}; padding:7px 14px; border-radius:20px;">{{ wkNowLabel }}</span>
+        </div>
+        <div style="padding:28px; display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
+          <div style="background:#F4F7FB; border-radius:14px; padding:22px; text-align:center;">
+            <div style="width:72px; height:72px; border-radius:50%; margin:0 auto 14px; background:#0A2540; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:#FFB74D;">{{ wkLeadInit }}</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#94A3B8; letter-spacing:0.08em; margin-bottom:6px;">EIC LEADER</div>
+            <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; color:#0A2540;">{{ wkLead }}</div>
+          </div>
+          <div style="background:#F4F7FB; border-radius:14px; padding:22px; text-align:center;">
+            <div style="width:72px; height:72px; border-radius:50%; margin:0 auto 14px; background:#1769E0; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:#fff;">{{ wkElInit }}</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#94A3B8; letter-spacing:0.08em; margin-bottom:6px;">ELECTRIC 7</div>
+            <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; color:#0A2540;">{{ wkEl }}</div>
+          </div>
+          <div style="background:#F4F7FB; border-radius:14px; padding:22px; text-align:center;">
+            <div style="width:72px; height:72px; border-radius:50%; margin:0 auto 14px; background:#F7941D; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:#fff;">{{ wkInsInit }}</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#94A3B8; letter-spacing:0.08em; margin-bottom:6px;">INSTRUMENT &amp; CONTROL 7</div>
+            <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; color:#0A2540;">{{ wkIns }}</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#5B6B7B; letter-spacing:0.08em; margin-bottom:10px;">PILIH PERIODE</div>
+      <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px;">
+        <sc-for list="{{ weekStrip }}" as="ws" hint-placeholder-count="14">
+          <button onClick="{{ ws.open }}" style="flex-shrink:0; cursor:pointer; border:{{ ws.ring }}; background:{{ ws.bg }}; color:{{ ws.fg }}; border-radius:11px; padding:10px 14px; text-align:left; min-width:104px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:.7;">{{ ws.mshort }}</div>
+            <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13px;">{{ ws.label }}</div>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.MONTHS=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    this.MSHORT=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    this.MM={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    const nowIdx=this.computeNowIdx();
+    this.state={ view:'month', m:(nowIdx>=0?(window.EIC7_WEEKS[nowIdx].m):5), wk:(nowIdx>=0?nowIdx:0), nowIdx:nowIdx };
+  }
+  componentDidMount(){ if(!window.EIC7_WEEKS||!window.EIC7_WEEKS.length){ setTimeout(()=>this.forceUpdate(),300);} }
+  parseRange(r){
+    const parts=r.split(' - '); const rt=parts[1].trim().split(/\s+/);
+    const endDay=+rt[0], endMon=this.MM[rt[1]], yy=2000+(+rt[2]);
+    const lp=parts[0].trim().split(/\s+/);
+    let sDay, sMon; if(lp.length>=2){sDay=+lp[0];sMon=this.MM[lp[1]];}else{sDay=+lp[0];sMon=endMon;}
+    return {start:new Date(yy,sMon,sDay), end:new Date(yy,endMon,endDay,23,59)};
+  }
+  computeNowIdx(){
+    const W=window.EIC7_WEEKS||[]; if(!W.length) return -1;
+    let today=new Date(); if(today.getFullYear()!==2026) today=new Date(2026,5,24);
+    for(let i=0;i<W.length;i++){ const {start,end}=this.parseRange(W[i].r); if(today>=start&&today<=end) return i; }
+    return -1;
+  }
+  initials(name){ if(!name) return '—'; const p=name.replace(/[.,].*$/,'').trim().split(/\s+/); return ((p[0]||'')[0]||'')+((p[1]||'')[0]||''); }
+  seg(active){ return active?{bg:'#0A2540',fg:'#fff'}:{bg:'transparent',fg:'#5B6B7B'}; }
+  renderVals(){
+    const W=window.EIC7_WEEKS||[];
+    const all=W.map((w,i)=>({i,...w}));
+    const st=this.state; const nowIdx=st.nowIdx;
+    const y=this.seg(st.view==='year'), mo=this.seg(st.view==='month'), wkS=this.seg(st.view==='week');
+    // month weeks
+    const monthWeeks=all.filter(w=>w.m===st.m).map(w=>({
+      open:()=>this.setState({view:'week',wk:w.i}),
+      range:w.r,
+      typeLabel:w.t==='W'?'Akhir Pekan':'Hari Kerja',
+      typeColor:w.t==='W'?'#B45309':'#475569',
+      typeBg:w.t==='W'?'#FEF0DC':'#EEF1F5',
+      ring:w.i===nowIdx?'2px solid #F7941D':'1px solid #E2E9F1',
+      shadow:w.i===nowIdx?'0 6px 20px rgba(247,148,29,.18)':'none',
+      lead:w.lead.join(', ')||'—',
+      el:w.el.join(', ')||'— (Outage Unit 7)',
+      ins:w.ins.join(', ')||'— (Outage Unit 7)'
+    }));
+    // months list
+    const monthsList=this.MONTHS.map((nm,idx)=>{
+      const ws=all.filter(w=>w.m===idx); const cur=ws.some(w=>w.i===nowIdx);
+      return { open:()=>this.setState({view:'month',m:idx}), name:nm,
+        count:ws.length, weekend:ws.filter(w=>w.t==='W').length,
+        ring:cur?'2px solid #F7941D':'1px solid #E2E9F1',
+        tag:cur?'AKTIF':(this.MSHORT[idx].toUpperCase()),
+        badgeBg:cur?'#F7941D':'#94A3B8' };
+    });
+    // week view
+    const cur=all[st.wk]||all[0]||{r:'',m:0,t:'N',lead:[],el:[],ins:[]};
+    const weekStrip=all.map(w=>{
+      const sel=w.i===st.wk; const now=w.i===nowIdx;
+      return { open:()=>this.setState({wk:w.i}), label:w.r.replace(/\s*26$/,''), mshort:this.MSHORT[w.m],
+        bg:sel?'#0A2540':'#fff', fg:sel?'#fff':'#0A2540',
+        ring:now&&!sel?'2px solid #F7941D':'1px solid #E2E9F1' };
+    });
+    const navLabel = st.view==='year'?'Tahun 2026' : st.view==='month'?(this.MONTHS[st.m]+' 2026') : (cur.r||'—');
+    return {
+      isYear:st.view==='year', isMonth:st.view==='month', isWeek:st.view==='week',
+      viewYear:()=>this.setState({view:'year'}), viewMonth:()=>this.setState({view:'month'}), viewWeek:()=>this.setState({view:'week'}),
+      yearBg:y.bg, yearFg:y.fg, monthBg:mo.bg, monthFg:mo.fg, weekBg:wkS.bg, weekFg:wkS.fg,
+      navLabel,
+      goPrev:()=>{ if(st.view==='week') this.setState({wk:Math.max(0,st.wk-1)}); else if(st.view==='month') this.setState({m:Math.max(0,st.m-1)}); },
+      goNext:()=>{ if(st.view==='week') this.setState({wk:Math.min(all.length-1,st.wk+1)}); else if(st.view==='month') this.setState({m:Math.min(11,st.m+1)}); },
+      goToday:()=>{ if(nowIdx>=0) this.setState({view:'week',wk:nowIdx,m:all[nowIdx].m}); },
+      monthsList, monthWeeks, weekStrip,
+      wkRange:cur.r, wkMonthName:this.MONTHS[cur.m], wkTypeLabel:cur.t==='W'?'Akhir Pekan (Jum\u2019at\u2013Minggu)':'Hari Kerja (Senin\u2013Kamis)',
+      wkLead:cur.lead.join(', ')||'—', wkEl:cur.el.join(', ')||'— (Outage Unit 7)', wkIns:cur.ins.join(', ')||'— (Outage Unit 7)',
+      wkLeadInit:this.initials(cur.lead[0]), wkElInit:this.initials(cur.el[0]), wkInsInit:this.initials(cur.ins[0]),
+      wkNowLabel: st.wk===nowIdx?'STANDBY MINGGU INI':'Periode terpilih',
+      wkNowColor: st.wk===nowIdx?'#0A2540':'rgba(255,255,255,.85)',
+      wkNowBg: st.wk===nowIdx?'#FFB74D':'rgba(255,255,255,.12)'
+    };
+  }
+}
+</script>
+</body>
+</html>
