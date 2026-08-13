@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EIC7 Portal — PLTU Unit 7</title>
 <script src="./support.js"></script>
+<script src="./eic7-callout-data.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -128,6 +129,7 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
 .field-key-orange{color:#F7941D;}
 .callout-field-val{font-size:13px;font-weight:600;color:#0A2540;}
 .callout-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:5px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.badge-weekday{color:#475569;background:#EEF1F5;}
 .badge-weekend{color:#B45309;background:#FEF0DC;}
 .badge-active{color:#0A2540;background:#FFB74D;}
 
@@ -367,39 +369,94 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
       </div>
       <a href="callout.html">Buka kalender lengkap →</a>
     </div>
-    <div class="callout-list">
+    <div class="callout-list" id="calloutList">
       <a href="callout.html" class="callout-row">
-        <div class="callout-date">19 - 21 Jun</div>
+        <div class="callout-date">—</div>
         <div class="callout-divider"></div>
         <div class="callout-detail">
-          <div><div class="callout-field-key">LEADER</div><div class="callout-field-val">Purwo Budiarto</div></div>
-          <div><div class="callout-field-key field-key-blue">ELECTRIC</div><div class="callout-field-val">I Made Sucipta</div></div>
-          <div><div class="callout-field-key field-key-orange">INST &amp; CTRL</div><div class="callout-field-val">Abdurroqiib Romadhoni S.</div></div>
+          <div><div class="callout-field-key">LEADER</div><div class="callout-field-val">Memuat…</div></div>
+          <div><div class="callout-field-key field-key-blue">ELECTRIC</div><div class="callout-field-val">Memuat…</div></div>
+          <div><div class="callout-field-key field-key-orange">INST &amp; CTRL</div><div class="callout-field-val">Memuat…</div></div>
         </div>
-        <span class="callout-badge badge-weekend">AKHIR PEKAN</span>
-      </a>
-      <a href="callout.html" class="callout-row callout-row-active">
-        <div class="callout-date">22 - 25 Jun</div>
-        <div class="callout-divider"></div>
-        <div class="callout-detail">
-          <div><div class="callout-field-key">LEADER</div><div class="callout-field-val">Wachidun</div></div>
-          <div><div class="callout-field-key field-key-blue">ELECTRIC</div><div class="callout-field-val">Brewer Silitonga</div></div>
-          <div><div class="callout-field-key field-key-orange">INST &amp; CTRL</div><div class="callout-field-val">Mahfud</div></div>
-        </div>
-        <span class="callout-badge badge-active">MINGGU INI</span>
-      </a>
-      <a href="callout.html" class="callout-row">
-        <div class="callout-date">26 - 28 Jun</div>
-        <div class="callout-divider"></div>
-        <div class="callout-detail">
-          <div><div class="callout-field-key">LEADER</div><div class="callout-field-val">Jenny Ainur Rohman Marsus</div></div>
-          <div><div class="callout-field-key field-key-blue">ELECTRIC</div><div class="callout-field-val">I Made Sucipta</div></div>
-          <div><div class="callout-field-key field-key-orange">INST &amp; CTRL</div><div class="callout-field-val">Zaini Nurhidayat</div></div>
-        </div>
-        <span class="callout-badge badge-weekend">AKHIR PEKAN</span>
       </a>
     </div>
   </section>
+
+  <script>
+  (function(){
+    var MM={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+
+    function parseRange(r){
+      var parts=r.split(' - ');
+      var rt=parts[1].trim().split(/\s+/);
+      var endDay=+rt[0], endMon=MM[rt[1]], yy=2000+(+rt[2]);
+      var lp=parts[0].trim().split(/\s+/);
+      var sDay, sMon;
+      if(lp.length>=2){ sDay=+lp[0]; sMon=MM[lp[1]]; } else { sDay=+lp[0]; sMon=endMon; }
+      return { start:new Date(yy,sMon,sDay), end:new Date(yy,endMon,endDay,23,59) };
+    }
+
+    function findNowIdx(weeks){
+      var today=new Date();
+      for(var i=0;i<weeks.length;i++){
+        var range=parseRange(weeks[i].r);
+        if(today>=range.start && today<=range.end) return i;
+      }
+      var best=-1, bestDiff=Infinity;
+      for(var j=0;j<weeks.length;j++){
+        var diff=parseRange(weeks[j].r).start-today;
+        if(diff>=0 && diff<bestDiff){ bestDiff=diff; best=j; }
+      }
+      return best>=0?best:weeks.length-1;
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g,function(c){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function renderCallout(){
+      var list=document.getElementById('calloutList');
+      var weeks=window.EIC7_WEEKS||[];
+      if(!list || !weeks.length) return;
+
+      var nowIdx=findNowIdx(weeks);
+      var startIdx=Math.max(0, nowIdx-1);
+      var idxs=[];
+      for(var i=startIdx;i<Math.min(weeks.length,startIdx+3);i++) idxs.push(i);
+      while(idxs.length<3 && idxs[0]>0) idxs.unshift(idxs[0]-1);
+      while(idxs.length<3 && idxs[idxs.length-1]<weeks.length-1) idxs.push(idxs[idxs.length-1]+1);
+
+      list.innerHTML = idxs.map(function(i){
+        var w=weeks[i];
+        var isNow = i===nowIdx;
+        var badgeClass = isNow ? 'badge-active' : (w.t==='W' ? 'badge-weekend' : 'badge-weekday');
+        var badgeLabel = isNow ? 'MINGGU INI' : (w.t==='W' ? 'AKHIR PEKAN' : 'HARI KERJA');
+        var dateLabel = w.r.replace(/\s*\d{2}$/, '');
+        var lead = (w.lead && w.lead.length) ? w.lead.join(', ') : '—';
+        var el = (w.el && w.el.length) ? w.el.join(', ') : '— (Outage Unit 7)';
+        var ins = (w.ins && w.ins.length) ? w.ins.join(', ') : '— (Outage Unit 7)';
+        return '<a href="callout.html" class="callout-row'+(isNow?' callout-row-active':'')+'">'
+          + '<div class="callout-date">'+escapeHtml(dateLabel)+'</div>'
+          + '<div class="callout-divider"></div>'
+          + '<div class="callout-detail">'
+          +   '<div><div class="callout-field-key">LEADER</div><div class="callout-field-val">'+escapeHtml(lead)+'</div></div>'
+          +   '<div><div class="callout-field-key field-key-blue">ELECTRIC</div><div class="callout-field-val">'+escapeHtml(el)+'</div></div>'
+          +   '<div><div class="callout-field-key field-key-orange">INST &amp; CTRL</div><div class="callout-field-val">'+escapeHtml(ins)+'</div></div>'
+          + '</div>'
+          + '<span class="callout-badge '+badgeClass+'">'+badgeLabel+'</span>'
+          + '</a>';
+      }).join('');
+    }
+
+    if(document.readyState==='loading'){
+      document.addEventListener('DOMContentLoaded', renderCallout);
+    } else {
+      renderCallout();
+    }
+  })();
+  </script>
 
   <!-- FOOTER -->
   <footer class="footer-bar">
