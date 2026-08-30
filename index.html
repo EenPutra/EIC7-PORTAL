@@ -66,13 +66,14 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
 
 /* PORTAL */
 .portal-section{padding:54px 40px;background:#FFFFFF;}
-.portal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.portal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
 .portal-card{text-decoration:none;background:#F4F7FB;border:1px solid #E2E9F1;border-radius:14px;padding:26px;display:flex;flex-direction:column;transition:transform .15s;}
 .portal-card:hover{transform:translateY(-3px);}
 .portal-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0;}
 .icon-blue{background:#1769E0;}
 .icon-orange{background:#F7941D;}
 .icon-dark{background:#0A2540;}
+.icon-green{background:#0E9F6E;}
 .portal-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5B6B7B;letter-spacing:0.08em;}
 .portal-card h3{font-family:'Space Grotesk',sans-serif;font-size:19px;margin:6px 0 8px;color:#0A2540;}
 .portal-card p{font-size:13px;color:#5B6B7B;line-height:1.55;margin:0 0 16px;}
@@ -80,6 +81,7 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
 .cta-blue{color:#1769E0;}
 .cta-orange{color:#F7941D;}
 .cta-dark{color:#0A2540;}
+.cta-green{color:#0E9F6E;}
 
 /* PROFILE */
 .profile-section{padding:54px 40px;background:#0A2540;color:#fff;}
@@ -301,6 +303,13 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
         <p>Daftar spare part &amp; material beserta lokasi rak / gudang penyimpanannya.</p>
         <span class="portal-cta cta-dark">Buka aplikasi →</span>
       </a>
+      <a href="https://eenputra.github.io/CHECK-SHEET-POMI-ELEKTRIK-ONLINE/Review_Approval_Dashboard.html" target="_blank" rel="noopener" class="portal-card">
+        <div class="portal-icon icon-green"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <span class="portal-label">DASHBOARD</span>
+        <h3>Review &amp; Approval</h3>
+        <p>Pantau status review &amp; approval check sheet PM Electric Unit 7 secara online.</p>
+        <span class="portal-cta cta-green">Buka dashboard →</span>
+      </a>
     </div>
   </section>
 
@@ -369,94 +378,21 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
       </div>
       <a href="callout.html">Buka kalender lengkap →</a>
     </div>
-    <div class="callout-list" id="calloutList">
-      <a href="callout.html" class="callout-row">
-        <div class="callout-date">—</div>
-        <div class="callout-divider"></div>
-        <div class="callout-detail">
-          <div><div class="callout-field-key">LEADER</div><div class="callout-field-val">Memuat…</div></div>
-          <div><div class="callout-field-key field-key-blue">ELECTRIC</div><div class="callout-field-val">Memuat…</div></div>
-          <div><div class="callout-field-key field-key-orange">INST &amp; CTRL</div><div class="callout-field-val">Memuat…</div></div>
-        </div>
-      </a>
+    <div class="callout-list">
+      <sc-for list="{{ rows }}" as="row" hint-placeholder-count="3">
+        <a href="callout.html" class="{{ row.rowClass }}">
+          <div class="callout-date">{{ row.date }}</div>
+          <div class="callout-divider"></div>
+          <div class="callout-detail">
+            <div><div class="callout-field-key">LEADER</div><div class="callout-field-val">{{ row.lead }}</div></div>
+            <div><div class="callout-field-key field-key-blue">ELECTRIC</div><div class="callout-field-val">{{ row.el }}</div></div>
+            <div><div class="callout-field-key field-key-orange">INST &amp; CTRL</div><div class="callout-field-val">{{ row.ins }}</div></div>
+          </div>
+          <span class="{{ row.badgeClass }}">{{ row.badgeLabel }}</span>
+        </a>
+      </sc-for>
     </div>
   </section>
-
-  <script>
-  (function(){
-    var MM={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-
-    function parseRange(r){
-      var parts=r.split(' - ');
-      var rt=parts[1].trim().split(/\s+/);
-      var endDay=+rt[0], endMon=MM[rt[1]], yy=2000+(+rt[2]);
-      var lp=parts[0].trim().split(/\s+/);
-      var sDay, sMon;
-      if(lp.length>=2){ sDay=+lp[0]; sMon=MM[lp[1]]; } else { sDay=+lp[0]; sMon=endMon; }
-      return { start:new Date(yy,sMon,sDay), end:new Date(yy,endMon,endDay,23,59) };
-    }
-
-    function findNowIdx(weeks){
-      var today=new Date();
-      for(var i=0;i<weeks.length;i++){
-        var range=parseRange(weeks[i].r);
-        if(today>=range.start && today<=range.end) return i;
-      }
-      var best=-1, bestDiff=Infinity;
-      for(var j=0;j<weeks.length;j++){
-        var diff=parseRange(weeks[j].r).start-today;
-        if(diff>=0 && diff<bestDiff){ bestDiff=diff; best=j; }
-      }
-      return best>=0?best:weeks.length-1;
-    }
-
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g,function(c){
-        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-      });
-    }
-
-    function renderCallout(){
-      var list=document.getElementById('calloutList');
-      var weeks=window.EIC7_WEEKS||[];
-      if(!list || !weeks.length) return;
-
-      var nowIdx=findNowIdx(weeks);
-      var startIdx=Math.max(0, nowIdx-1);
-      var idxs=[];
-      for(var i=startIdx;i<Math.min(weeks.length,startIdx+3);i++) idxs.push(i);
-      while(idxs.length<3 && idxs[0]>0) idxs.unshift(idxs[0]-1);
-      while(idxs.length<3 && idxs[idxs.length-1]<weeks.length-1) idxs.push(idxs[idxs.length-1]+1);
-
-      list.innerHTML = idxs.map(function(i){
-        var w=weeks[i];
-        var isNow = i===nowIdx;
-        var badgeClass = isNow ? 'badge-active' : (w.t==='W' ? 'badge-weekend' : 'badge-weekday');
-        var badgeLabel = isNow ? 'MINGGU INI' : (w.t==='W' ? 'AKHIR PEKAN' : 'HARI KERJA');
-        var dateLabel = w.r.replace(/\s*\d{2}$/, '');
-        var lead = (w.lead && w.lead.length) ? w.lead.join(', ') : '—';
-        var el = (w.el && w.el.length) ? w.el.join(', ') : '— (Outage Unit 7)';
-        var ins = (w.ins && w.ins.length) ? w.ins.join(', ') : '— (Outage Unit 7)';
-        return '<a href="callout.html" class="callout-row'+(isNow?' callout-row-active':'')+'">'
-          + '<div class="callout-date">'+escapeHtml(dateLabel)+'</div>'
-          + '<div class="callout-divider"></div>'
-          + '<div class="callout-detail">'
-          +   '<div><div class="callout-field-key">LEADER</div><div class="callout-field-val">'+escapeHtml(lead)+'</div></div>'
-          +   '<div><div class="callout-field-key field-key-blue">ELECTRIC</div><div class="callout-field-val">'+escapeHtml(el)+'</div></div>'
-          +   '<div><div class="callout-field-key field-key-orange">INST &amp; CTRL</div><div class="callout-field-val">'+escapeHtml(ins)+'</div></div>'
-          + '</div>'
-          + '<span class="callout-badge '+badgeClass+'">'+badgeLabel+'</span>'
-          + '</a>';
-      }).join('');
-    }
-
-    if(document.readyState==='loading'){
-      document.addEventListener('DOMContentLoaded', renderCallout);
-    } else {
-      renderCallout();
-    }
-  })();
-  </script>
 
   <!-- FOOTER -->
   <footer class="footer-bar">
@@ -470,5 +406,60 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
 </div>
 </div>
 </x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.MM={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  }
+  componentDidMount(){
+    if(!window.EIC7_WEEKS || !window.EIC7_WEEKS.length){ setTimeout(()=>this.forceUpdate(),300); }
+  }
+  parseRange(r){
+    const parts=r.split(' - ');
+    const rt=parts[1].trim().split(/\s+/);
+    const endDay=+rt[0], endMon=this.MM[rt[1]], yy=2000+(+rt[2]);
+    const lp=parts[0].trim().split(/\s+/);
+    let sDay, sMon;
+    if(lp.length>=2){ sDay=+lp[0]; sMon=this.MM[lp[1]]; } else { sDay=+lp[0]; sMon=endMon; }
+    return { start:new Date(yy,sMon,sDay), end:new Date(yy,endMon,endDay,23,59) };
+  }
+  findNowIdx(weeks){
+    const today=new Date();
+    for(let i=0;i<weeks.length;i++){
+      const {start,end}=this.parseRange(weeks[i].r);
+      if(today>=start && today<=end) return i;
+    }
+    let best=-1, bestDiff=Infinity;
+    for(let j=0;j<weeks.length;j++){
+      const diff=this.parseRange(weeks[j].r).start-today;
+      if(diff>=0 && diff<bestDiff){ bestDiff=diff; best=j; }
+    }
+    return best>=0?best:weeks.length-1;
+  }
+  renderVals(){
+    const weeks=window.EIC7_WEEKS||[];
+    if(!weeks.length) return { rows:[] };
+    const nowIdx=this.findNowIdx(weeks);
+    let start=Math.max(0, nowIdx-1);
+    if(start+3>weeks.length) start=Math.max(0, weeks.length-3);
+    const rows=[];
+    for(let i=start;i<Math.min(weeks.length,start+3);i++){
+      const w=weeks[i];
+      const isNow=i===nowIdx;
+      rows.push({
+        rowClass: isNow ? 'callout-row callout-row-active' : 'callout-row',
+        date: w.r.replace(/\s*\d{2}$/, ''),
+        lead: (w.lead && w.lead.length) ? w.lead.join(', ') : '—',
+        el: (w.el && w.el.length) ? w.el.join(', ') : '— (Outage Unit 7)',
+        ins: (w.ins && w.ins.length) ? w.ins.join(', ') : '— (Outage Unit 7)',
+        badgeClass: isNow ? 'callout-badge badge-active' : (w.t==='W' ? 'callout-badge badge-weekend' : 'callout-badge badge-weekday'),
+        badgeLabel: isNow ? 'MINGGU INI' : (w.t==='W' ? 'AKHIR PEKAN' : 'HARI KERJA')
+      });
+    }
+    return { rows };
+  }
+}
+</script>
 </body>
 </html>
