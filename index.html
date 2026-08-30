@@ -50,6 +50,13 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
 .hero-card p{font-size:13px;color:#5B6B7B;line-height:1.5;margin:0 0 14px;}
 .hero-card a.link-blue{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#1769E0;text-decoration:none;}
 .hero-card a.link-orange{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#F7941D;text-decoration:none;}
+.hero-card-standby{border-left:4px solid #F7941D;}
+.hero-standby-list{display:flex;flex-direction:column;gap:8px;margin:12px 0 14px;}
+.hero-standby-list>div{display:flex;align-items:baseline;gap:10px;}
+.hero-standby-key{flex-shrink:0;width:64px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#94A3B8;}
+.hero-standby-key-blue{color:#1769E0;}
+.hero-standby-key-orange{color:#F7941D;}
+.hero-standby-val{font-size:13px;font-weight:600;color:#0A2540;}
 .hero-stat{background:#0A2540;border-radius:12px;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;}
 .hero-stat-num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;color:#fff;}
 .hero-stat-label{font-size:12px;color:rgba(255,255,255,.7);}
@@ -244,36 +251,34 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
         <h1 class="hero-title">POWERING UNIT 7,<br>TOGETHER.</h1>
         <p class="hero-desc">Portal terpadu Section Electric, Instrument &amp; Control. Satu pintu untuk akses program PM, data material, jadwal call out, dan profil tim kita.</p>
         <div class="hero-buttons">
-          <a href="#" class="hero-btn-primary">Mulai Akses Portal</a>
-          <a href="#" class="hero-btn-secondary">Profil Section</a>
+          <a href="#portal" class="hero-btn-primary">Mulai Akses Portal</a>
+          <a href="#profil" class="hero-btn-secondary">Profil Section</a>
         </div>
       </div>
     </div>
     <div class="hero-right">
-      <div class="hero-card hero-card-electric">
-        <span class="hero-card-badge badge-blue">PORTAL PM</span>
-        <h3>PM Electric</h3>
-        <p>Program preventive maintenance peralatan listrik unit 7.</p>
-        <a href="https://eenputra.github.io/CHECK-SHEET-POMI-ELEKTRIK-ONLINE/" target="_blank" rel="noopener" class="link-blue">Buka Portal →</a>
-      </div>
-      <div class="hero-card hero-card-ic">
-        <span class="hero-card-badge badge-orange">PORTAL PM</span>
-        <h3>PM Instrument &amp; Control</h3>
-        <p>Program PM instrumentasi &amp; sistem kontrol.</p>
-        <a href="https://mahfudjtf.github.io/PM-UNIT-7/" target="_blank" rel="noopener" class="link-orange">Buka Portal →</a>
+      <div class="hero-card hero-card-standby">
+        <span class="hero-card-badge badge-orange">STANDBY MINGGU INI</span>
+        <h3>{{ heroRange }}</h3>
+        <div class="hero-standby-list">
+          <div><span class="hero-standby-key">LEADER</span><span class="hero-standby-val">{{ heroLead }}</span></div>
+          <div><span class="hero-standby-key hero-standby-key-blue">ELECTRIC</span><span class="hero-standby-val">{{ heroEl }}</span></div>
+          <div><span class="hero-standby-key hero-standby-key-orange">I&amp;C</span><span class="hero-standby-val">{{ heroIns }}</span></div>
+        </div>
+        <a href="callout.html" class="link-orange">Buka kalender call out →</a>
       </div>
       <div class="hero-stat">
         <div>
-          <div class="hero-stat-num">3</div>
-          <div class="hero-stat-label">Call out aktif minggu ini</div>
+          <div class="hero-stat-num">{{ heroStatNum }}</div>
+          <div class="hero-stat-label">Petugas standby minggu ini</div>
         </div>
-        <a href="#">Lihat →</a>
+        <a href="callout.html">Lihat →</a>
       </div>
     </div>
   </section>
 
   <!-- PORTAL UTAMA -->
-  <section class="portal-section">
+  <section class="portal-section" id="portal">
     <div class="section-header">
       <div>
         <div class="section-eyebrow eyebrow-blue">QUICK ACCESS</div>
@@ -314,7 +319,7 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
   </section>
 
   <!-- PROFIL SECTION -->
-  <section class="profile-section">
+  <section class="profile-section" id="profil">
     <div class="profile-grid">
       <div>
         <div class="section-eyebrow eyebrow-yellow">PROFIL SECTION</div>
@@ -439,8 +444,14 @@ class Component extends DCLogic {
   }
   renderVals(){
     const weeks=window.EIC7_WEEKS||[];
-    if(!weeks.length) return { rows:[] };
+    if(!weeks.length){
+      return { rows:[], heroRange:'—', heroLead:'Memuat…', heroEl:'Memuat…', heroIns:'Memuat…', heroStatNum:'—' };
+    }
     const nowIdx=this.findNowIdx(weeks);
+    const nw=weeks[nowIdx]||{r:'',lead:[],el:[],ins:[]};
+    const nwEl=(nw.el&&nw.el.length)?nw.el.join(', '):'— (Outage)';
+    const nwIns=(nw.ins&&nw.ins.length)?nw.ins.join(', '):'— (Outage)';
+    const heroStatNum=[nw.lead,nw.el,nw.ins].filter(a=>a&&a.length).reduce((n,a)=>n+a.length,0)||0;
     let start=Math.max(0, nowIdx-1);
     if(start+3>weeks.length) start=Math.max(0, weeks.length-3);
     const rows=[];
@@ -457,7 +468,14 @@ class Component extends DCLogic {
         badgeLabel: isNow ? 'MINGGU INI' : (w.t==='W' ? 'AKHIR PEKAN' : 'HARI KERJA')
       });
     }
-    return { rows };
+    return {
+      rows,
+      heroRange: nw.r.replace(/\s*\d{2}$/, '') || '—',
+      heroLead: (nw.lead && nw.lead.length) ? nw.lead.join(', ') : '—',
+      heroEl: nwEl,
+      heroIns: nwIns,
+      heroStatNum: heroStatNum
+    };
   }
 }
 </script>
