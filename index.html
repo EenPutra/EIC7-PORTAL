@@ -92,6 +92,25 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
 .cta-green{color:#0E9F6E;}
 .cta-red{color:#DC2626;}
 
+/* JSA POPUP */
+.portal-card-btn{cursor:pointer;}
+.jsa-popup-overlay{display:none;position:fixed;inset:0;background:rgba(10,37,64,.55);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.jsa-popup-overlay.show{display:flex;}
+.jsa-popup{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:28px;position:relative;box-shadow:0 20px 60px rgba(10,37,64,.35);}
+.jsa-popup-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;border:none;background:#F4F7FB;color:#5B6B7B;font-size:15px;cursor:pointer;}
+.jsa-popup-title{font-family:'Space Grotesk',sans-serif;font-size:20px;color:#0A2540;margin:0 0 4px;}
+.jsa-popup-sub{font-size:13px;color:#5B6B7B;margin:0 0 20px;}
+.jsa-popup-option{display:flex;align-items:center;gap:14px;border-radius:12px;padding:16px;text-decoration:none;margin-bottom:12px;border:1px solid #E2E9F1;transition:transform .15s;}
+.jsa-popup-option:hover{transform:translateY(-2px);}
+.jsa-popup-option:last-child{margin-bottom:0;}
+.jsa-popup-option-blue{background:#EEF4FE;border-color:#C7DBFB;}
+.jsa-popup-option-red{background:#FDEEEE;border-color:#F7C9C9;}
+.jsa-popup-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:18px;}
+.jsa-popup-option-blue .jsa-popup-icon{background:#1769E0;}
+.jsa-popup-option-red .jsa-popup-icon{background:#DC2626;}
+.jsa-popup-option-title{font-family:'Space Grotesk',sans-serif;font-size:15px;color:#0A2540;font-weight:600;}
+.jsa-popup-option-desc{font-size:12px;color:#5B6B7B;margin-top:2px;}
+
 /* PROFILE */
 .profile-section{padding:54px 40px;background:#0A2540;color:#fff;}
 .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
@@ -317,15 +336,38 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
         <p>Pantau status review &amp; approval check sheet PM Electric Unit 7 secara online.</p>
         <span class="portal-cta cta-green">Buka dashboard →</span>
       </a>
-      <a href="https://mahfudjtf.github.io/PM-UNIT-7/" target="_blank" rel="noopener" class="portal-card">
+      <div class="portal-card portal-card-btn" onclick="openJsaPopup()">
         <div class="portal-icon icon-red"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
         <span class="portal-label">SAFETY</span>
         <h3>Buat JSA</h3>
-        <p>Pilihan buat Job Safety Analysis (JSA) tersedia di portal PM Unit 7.</p>
+        <p>Job Safety Analysis — pilih Conditional Access atau Risk to Trip.</p>
         <span class="portal-cta cta-red">Buka aplikasi →</span>
-      </a>
+      </div>
     </div>
   </section>
+
+  <!-- JSA POPUP -->
+  <div class="jsa-popup-overlay" id="jsaPopupOverlay" onclick="if(event.target===this)closeJsaPopup()">
+    <div class="jsa-popup">
+      <button type="button" class="jsa-popup-close" onclick="closeJsaPopup()" aria-label="Tutup">✕</button>
+      <h3 class="jsa-popup-title">Job Safety Analysis</h3>
+      <p class="jsa-popup-sub">Pilih jenis form JSA yang ingin dibuka</p>
+      <a class="jsa-popup-option jsa-popup-option-blue" href="https://mahfudjtf.github.io/PM-UNIT-7/jsa_condition_access.html" target="_blank" rel="noopener">
+        <div class="jsa-popup-icon">◆</div>
+        <div>
+          <div class="jsa-popup-option-title">JSA Conditional Access</div>
+          <div class="jsa-popup-option-desc">Plant Process &amp; Risk Checklist (Online/Offline, Risk Category, Hazard Identification) sebagai header.</div>
+        </div>
+      </a>
+      <a class="jsa-popup-option jsa-popup-option-red" href="https://mahfudjtf.github.io/PM-UNIT-7/jsa_report.html" target="_blank" rel="noopener">
+        <div class="jsa-popup-icon">▼</div>
+        <div>
+          <div class="jsa-popup-option-title">JSA Risk To Trip</div>
+          <div class="jsa-popup-option-desc">Risk to Trip No., Risk Level (HIRA) &amp; approval tambahan sebagai header.</div>
+        </div>
+      </a>
+    </div>
+  </div>
 
   <!-- PROFIL SECTION -->
   <section class="profile-section" id="profil">
@@ -487,6 +529,11 @@ class Component extends DCLogic {
     };
   }
 }
+</script>
+<script>
+function openJsaPopup(){ document.getElementById('jsaPopupOverlay').classList.add('show'); }
+function closeJsaPopup(){ document.getElementById('jsaPopupOverlay').classList.remove('show'); }
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeJsaPopup(); });
 </script>
 </body>
 </html>
