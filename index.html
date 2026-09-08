@@ -94,8 +94,7 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
 
 /* JSA POPUP */
 .portal-card-btn{cursor:pointer;}
-.jsa-popup-overlay{display:none;position:fixed;inset:0;background:rgba(10,37,64,.55);z-index:1000;align-items:center;justify-content:center;padding:20px;}
-.jsa-popup-overlay.show{display:flex;}
+.jsa-popup-overlay{display:flex;position:fixed;inset:0;background:rgba(10,37,64,.55);z-index:1000;align-items:center;justify-content:center;padding:20px;}
 .jsa-popup{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:28px;position:relative;box-shadow:0 20px 60px rgba(10,37,64,.35);}
 .jsa-popup-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;border:none;background:#F4F7FB;color:#5B6B7B;font-size:15px;cursor:pointer;}
 .jsa-popup-title{font-family:'Space Grotesk',sans-serif;font-size:20px;color:#0A2540;margin:0 0 4px;}
@@ -336,7 +335,7 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
         <p>Pantau status review &amp; approval check sheet PM Electric Unit 7 secara online.</p>
         <span class="portal-cta cta-green">Buka dashboard →</span>
       </a>
-      <div class="portal-card portal-card-btn" onclick="openJsaPopup()">
+      <div class="portal-card portal-card-btn" onclick="{{ openJsaPopup }}">
         <div class="portal-icon icon-red"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
         <span class="portal-label">SAFETY</span>
         <h3>Buat JSA</h3>
@@ -347,27 +346,29 @@ body{margin:0;background:#F4F7FB;font-family:'IBM Plex Sans',sans-serif;color:#0
   </section>
 
   <!-- JSA POPUP -->
-  <div class="jsa-popup-overlay" id="jsaPopupOverlay" onclick="if(event.target===this)closeJsaPopup()">
-    <div class="jsa-popup">
-      <button type="button" class="jsa-popup-close" onclick="closeJsaPopup()" aria-label="Tutup">✕</button>
-      <h3 class="jsa-popup-title">Job Safety Analysis</h3>
-      <p class="jsa-popup-sub">Pilih jenis form JSA yang ingin dibuka</p>
-      <a class="jsa-popup-option jsa-popup-option-blue" href="https://mahfudjtf.github.io/PM-UNIT-7/jsa_condition_access.html" target="_blank" rel="noopener">
-        <div class="jsa-popup-icon">◆</div>
-        <div>
-          <div class="jsa-popup-option-title">JSA Conditional Access</div>
-          <div class="jsa-popup-option-desc">Plant Process &amp; Risk Checklist (Online/Offline, Risk Category, Hazard Identification) sebagai header.</div>
-        </div>
-      </a>
-      <a class="jsa-popup-option jsa-popup-option-red" href="https://mahfudjtf.github.io/PM-UNIT-7/jsa_report.html" target="_blank" rel="noopener">
-        <div class="jsa-popup-icon">▼</div>
-        <div>
-          <div class="jsa-popup-option-title">JSA Risk To Trip</div>
-          <div class="jsa-popup-option-desc">Risk to Trip No., Risk Level (HIRA) &amp; approval tambahan sebagai header.</div>
-        </div>
-      </a>
+  <sc-if value="{{ jsaPopupOpen }}">
+    <div class="jsa-popup-overlay" onclick="{{ closeJsaOnBackdrop }}">
+      <div class="jsa-popup">
+        <button type="button" class="jsa-popup-close" onclick="{{ closeJsaPopup }}" aria-label="Tutup">✕</button>
+        <h3 class="jsa-popup-title">Job Safety Analysis</h3>
+        <p class="jsa-popup-sub">Pilih jenis form JSA yang ingin dibuka</p>
+        <a class="jsa-popup-option jsa-popup-option-blue" href="https://mahfudjtf.github.io/PM-UNIT-7/jsa_condition_access.html" target="_blank" rel="noopener">
+          <div class="jsa-popup-icon">◆</div>
+          <div>
+            <div class="jsa-popup-option-title">JSA Conditional Access</div>
+            <div class="jsa-popup-option-desc">Plant Process &amp; Risk Checklist (Online/Offline, Risk Category, Hazard Identification) sebagai header.</div>
+          </div>
+        </a>
+        <a class="jsa-popup-option jsa-popup-option-red" href="https://mahfudjtf.github.io/PM-UNIT-7/jsa_report.html" target="_blank" rel="noopener">
+          <div class="jsa-popup-icon">▼</div>
+          <div>
+            <div class="jsa-popup-option-title">JSA Risk To Trip</div>
+            <div class="jsa-popup-option-desc">Risk to Trip No., Risk Level (HIRA) &amp; approval tambahan sebagai header.</div>
+          </div>
+        </a>
+      </div>
     </div>
-  </div>
+  </sc-if>
 
   <!-- PROFIL SECTION -->
   <section class="profile-section" id="profil">
@@ -467,7 +468,11 @@ class Component extends DCLogic {
   constructor(props){
     super(props);
     this.MM={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    window.__closeJsaPopup=()=>this.closeJsaPopup();
   }
+  openJsaPopup=()=>{ this.setState({ jsaPopupOpen:true }); };
+  closeJsaPopup=()=>{ this.setState({ jsaPopupOpen:false }); };
+  closeJsaOnBackdrop=(e)=>{ if(e.target===e.currentTarget) this.closeJsaPopup(); };
   componentDidMount(){
     if(!window.EIC7_WEEKS || !window.EIC7_WEEKS.length){ setTimeout(()=>this.forceUpdate(),300); }
   }
@@ -495,8 +500,9 @@ class Component extends DCLogic {
   }
   renderVals(){
     const weeks=window.EIC7_WEEKS||[];
+    const jsa={ jsaPopupOpen:!!this.state.jsaPopupOpen, openJsaPopup:this.openJsaPopup, closeJsaPopup:this.closeJsaPopup, closeJsaOnBackdrop:this.closeJsaOnBackdrop };
     if(!weeks.length){
-      return { rows:[], heroRange:'—', heroLead:'Memuat…', heroEl:'Memuat…', heroIns:'Memuat…', heroStatNum:'—' };
+      return { ...jsa, rows:[], heroRange:'—', heroLead:'Memuat…', heroEl:'Memuat…', heroIns:'Memuat…', heroStatNum:'—' };
     }
     const nowIdx=this.findNowIdx(weeks);
     const nw=weeks[nowIdx]||{r:'',lead:[],el:[],ins:[]};
@@ -520,6 +526,7 @@ class Component extends DCLogic {
       });
     }
     return {
+      ...jsa,
       rows,
       heroRange: nw.r.replace(/\s*\d{2}$/, '') || '—',
       heroLead: (nw.lead && nw.lead.length) ? nw.lead.join(', ') : '—',
@@ -531,9 +538,7 @@ class Component extends DCLogic {
 }
 </script>
 <script>
-function openJsaPopup(){ document.getElementById('jsaPopupOverlay').classList.add('show'); }
-function closeJsaPopup(){ document.getElementById('jsaPopupOverlay').classList.remove('show'); }
-document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeJsaPopup(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape' && window.__closeJsaPopup) window.__closeJsaPopup(); });
 </script>
 </body>
 </html>
